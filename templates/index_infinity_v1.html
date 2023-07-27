@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <title>Infinity Main Game</title>
+   <!-- <script>    -->
+   <!--    // Refresh the page every 5 seconds (5000 milliseconds)     -->
+   <!--    setTimeout(function() {    -->
+   <!--      location.reload();    -->
+   <!--    }, 10);   -->
+   <!-- </script>   -->
+   <style>
+    .table-wrapper {
+       display: flex;
+       flex-wrap: wrap;
+       margin-bottom: 15px; /* Increase this value if you want more space below the tables */
+    }
+    
+    .table1 table {
+       border-collapse: collapse;
+    }
+    
+    td {
+       width: 70px;
+       height: 70px;
+       text-align: center;
+       border: 1px solid black;
+    }
+     
+    img {
+       max-width: 100%;
+       max-height: 100%;
+    }
+    
+    .table-wrapper > div {
+       margin-right: 20px; /* Adjust the spacing between tables */
+    }
+   </style>
+ 
+ <div>
+    <h1 style="font-weight: normal;">RTP total 65.102628</h1>
+    <h1>Infinity Spins (Main Game) v1</h1>
+    <!-- Add the image tag for displaying the egg image -->
+ 
+    <div class="table-wrapper">
+       <div class="table1">
+          <table>
+             {% for row in results %}
+                <tr>
+                   {% for cell in row %}
+                      <td>
+                         {% if cell == 'S1' %}
+                            <img src="{{ url_for('static', filename='images/S1.png') }}" alt="S1">
+                         {% elif cell == 'S2' %}
+                            <img src="{{ url_for('static', filename='images/S2.png') }}" alt="S2">
+                         {% elif cell == 'S3' %}
+                            <img src="{{ url_for('static', filename='images/S3.png') }}" alt="S3">
+                         {% elif cell == 'S4' %}
+                            <img src="{{ url_for('static', filename='images/S4.png') }}" alt="S4">
+                         {% elif cell == 'W1' %}
+                            <img src="{{ url_for('static', filename='images/W1.png') }}" alt="W1">
+                         {% elif cell == 'W2' %}
+                            <img src="{{ url_for('static', filename='images/W2.png') }}" alt="W2">
+                         {% elif cell == 'W3' %}
+                            <img src="{{ url_for('static', filename='images/W3.png') }}" alt="W3">
+                         {% elif cell == 'W4' %}
+                            <img src="{{ url_for('static', filename='images/W4.png') }}" alt="W4">
+                         {% elif cell == 'FS' %}
+                            <img src="{{ url_for('static', filename='images/FS.png') }}" alt="FS">
+                         {% else %}
+                            {{ cell }}
+                         {% endif %}
+                      </td>
+                   {% endfor %}
+                </tr>
+             {% endfor %}
+          </table>
+       </div>
+    </table>
+    </div>
+ </div>
+
+   <button onclick="location.reload()">Spin! (F5)</button>
+   <button onclick="resetGame()">Reset game</button>
+
+{% if W1_4 != 0 %}
+   <p> 4 Weak1 symbols pays {{ W1_4pay }} </p>
+{% endif %}
+
+{% if W1_3 != 0 %}
+   <p> 3 Weak1 symbols pays {{ W1_3pay }} </p>
+{% endif %}
+
+{% if W2_4 != 0 %}
+   <p> 4 Weak2 symbols pays {{ W2_4pay }} </p>
+{% endif %}
+
+{% if W2_3 != 0 %}
+   <p> 3 Weak2 symbols pays {{ W2_3pay }} </p>
+{% endif %}
+
+{% if W3_4 != 0 %}
+   <p> 4 Weak3 symbols pays {{ W3_4pay }} </p>
+{% endif %}
+
+{% if W3_3 != 0 %}
+   <p> 3 Weak3 symbols pays {{ W3_3pay }} </p>
+{% endif %}
+
+{% if W4_4 != 0 %}
+   <p> 4 Weak4 symbols pays {{ W4_4pay }} </p>
+{% endif %}
+
+{% if W4_3 != 0 %}
+   <p> 3 Weak4 symbols pays {{ W4_3pay }} </p>
+{% endif %}
+
+{% if S1_4 != 0 %}
+   <p> 4 Strong1 symbols pays {{ S1_4pay }} </p>
+{% endif %}
+
+{% if S1_3 != 0 %}
+   <p> 3 Strong1 symbols pays {{ S1_3pay }} </p>
+{% endif %}
+
+{% if S1_2 != 0 %}
+   <p> 2 Strong1 symbols pays {{ S1_2pay }} </p>
+{% endif %}
+
+{% if S2_4 != 0 %}
+   <p> 4 Strong2 symbols pays {{ S2_4pay }} </p>
+{% endif %}
+
+{% if S2_3 != 0 %}
+   <p> 3 Strong2 symbols pays {{ S2_3pay }} </p>
+{% endif %}
+
+{% if S2_2 != 0 %}
+   <p> 2 Strong2 symbols pays {{ S2_2pay }} </p>
+{% endif %}
+
+{% if S3_4 != 0 %}
+   <p> 4 Strong3 symbols pays {{ S3_4pay }} </p>
+{% endif %}
+
+{% if S3_3 != 0 %}
+   <p> 3 Strong3 symbols pays {{ S3_3pay }} </p>
+{% endif %}
+
+{% if S3_2 != 0 %}
+   <p> 2 Strong3 symbols pays {{ S3_2pay }} </p>
+{% endif %}
+
+{% if S4_4 != 0 %}
+   <p> 4 Strong4 symbols pays {{ S4_4pay }} </p>
+{% endif %}
+
+{% if S4_3 != 0 %}
+   <p> 3 Strong4 symbols pays {{ S4_3pay }} </p>
+{% endif %}
+
+{% if S4_2 != 0 %}
+   <p> 2 Strong4 symbols pays {{ S4_2pay }} </p>
+{% endif %}
+
+<p>--- Wins: {{payment}}</p>
+
+    <script>
+        // Check if the spin count is stored in local storage
+        if (localStorage.getItem('spinCount') === null) {
+           // If not present, initialize the spin count to 0
+           localStorage.setItem('spinCount', '0');
+        }
+        
+        // Check if the balance is stored in local storage
+        if (localStorage.getItem('balance') === null) {
+           // If not present, initialize the balance to 1000
+           localStorage.setItem('balance', '1000');
+        }
+
+        // Check if the hits count is stored in local storage
+        if (localStorage.getItem('hitsCount') === null) {
+        // If not present, initialize the hits count to 0
+        localStorage.setItem('hitsCount', '0');
+        }
+
+        // Check if the hits count is stored in local storage
+        if (localStorage.getItem('liveRTP') === null) {
+        // If not present, initialize the hits count to 0
+        localStorage.setItem('liveRTP', '0');
+        }
+
+        // Check if the numofeggs is stored in local storage
+        // if (localStorage.getItem('countegg') === null) {
+        // If not present, initialize the countegg count to 0
+        // localStorage.setItem('countegg', '0');
+        // }
+  
+        // Retrieve the spin count from local storage
+        var spinCount = parseInt(localStorage.getItem('spinCount'));
+
+        // Retrieve the balance from local storage
+        var balance = parseFloat(localStorage.getItem('balance'));
+
+        // Retrieve the hits count from local storage
+        var hitsCount = parseInt(localStorage.getItem('hitsCount'));
+
+        // Retrieve the countegg count from local storage
+        // var countegg = parseInt(localStorage.getItem('countegg'));
+  
+        // Increment the spin count by 1
+        spinCount += 1;
+
+        // Increment the countegg count by probegg
+        // countegg += parseInt("{{ probegg }}");
+
+        // Subtract 1 from the balance
+        balance -= 1;
+        // Add the payment value from the Python code
+        balance += parseFloat("{{ payment }}");
+
+        // Round the balance to 2 decimal place
+        balance = balance.toFixed(2);
+
+        // If payment is different from 0, increment hits count by 1
+        if (parseFloat("{{ payment }}") !== 0) {
+            hitsCount += 1;
+        }
+  
+        // Save the updated spin count back to local storage
+        localStorage.setItem('spinCount', spinCount.toString());
+
+        // Save the updated balance back to local storage
+        localStorage.setItem('balance', balance.toString());
+
+        // Save the updated hits count back to local storage
+        localStorage.setItem('hitsCount', hitsCount.toString());
+
+        // Save the updated countegg count back to local storage
+        // localStorage.setItem('countegg', countegg.toString());
+  
+        // Display the spin count on the page
+        var spinCountElement = document.createElement('p');
+        spinCountElement.textContent = '--- Spin Count: ' + spinCount;
+        document.body.appendChild(spinCountElement);
+
+        // Display the balance on the page
+        var balanceElement = document.createElement('p');
+        balanceElement.textContent = '--- Balance: ' + balance;
+        document.body.appendChild(balanceElement);
+
+        // Display the countegg on the page
+        // var counteggElement = document.createElement('p');
+        // counteggElement.textContent = '--- Eggs Count: ' + countegg;
+        // document.body.appendChild(counteggElement);
+
+        // Display the hits count on the page
+        var hitsCountElement = document.createElement('p');
+        hitsCountElement.textContent = '--- Hits: ' + hitsCount;
+        document.body.appendChild(hitsCountElement);
+
+        // Display the live RTP on the page
+        var liveRTPElement = document.createElement('p');
+        liveRTPElement.textContent = '--- Live RTP: ' + (100*(1-(1000-balance)/spinCount)).toFixed(2);
+        document.body.appendChild(liveRTPElement);
+
+        // Display the numofv on the page
+        //var numofvElement = document.createElement('p');
+        //numofvElement.textContent = '--- Num of v: ' + numofv;
+        //document.body.appendChild(numofvElement);
+
+        // Display the numofd on the page
+        //var numofdElement = document.createElement('p');
+        //numofdElement.textContent = '--- Num of d: ' + numofd;
+        //document.body.appendChild(numofdElement);
+    </script>
+
+    <script>
+        // Flag to prevent multiple executions of the reset process
+        var resetInProgress = false;
+
+        // Function to reset the game data
+        function resetGame() {
+           // If reset process is already in progress, return
+           if (resetInProgress) {
+               return;
+            }
+
+            // Set the reset in progress flag to true
+            resetInProgress = true;
+
+            // Clear the spin count and balance from local storage
+            localStorage.removeItem('spinCount');
+            localStorage.removeItem('balance');
+            localStorage.removeItem('hitsCount');
+            localStorage.removeItem('liveRTP');
+            
+            // Reset the countegg variable on the server
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', '/reset_countegg', true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) { 
+                    // Reload the page to reset the game
+                    location.reload();
+                }
+            };
+            xhr.send();
+        }
+     </script>
+</body>
+</html>
+
